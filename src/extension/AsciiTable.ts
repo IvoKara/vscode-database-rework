@@ -34,6 +34,7 @@ export const asciiTable = (json: AnyObject[], appendLine: (line: string) => void
         }
         
         appendLine(line());
+        appendLine('');
     };
 
     for (const key in keys) {

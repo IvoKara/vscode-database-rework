@@ -225,7 +225,7 @@ export class Manager {
 
     queryOutput(data: AnyObject, sql: string){
         this.queryOutputAscii(data);
-        this.queryOutputMarkdown(data, sql);
+        // this.queryOutputMarkdown(data, sql);
     }
     
     queryOutputAscii (data: AnyObject){
@@ -249,9 +249,9 @@ export class Manager {
         }else{
             this.outputMsg('ok');
         }
-        // if(this.OutputChannel !== null){
-        //     this.OutputChannel.show();
-        // }
+        if(this.OutputChannel !== null){
+            this.OutputChannel.show();
+        }
     }
 
     queryOutputMarkdown (data: AnyObject, sql: string){

@@ -44,7 +44,7 @@ export const asciiTableBig = (json: AnyObject[], appendLine: (line: string) => v
             }
 
             appendLine(line());
-
+            appendLine('');
         }
     };
 
