@@ -1,9 +1,8 @@
 {
-	"name": "vscode-database",
-	"displayName": "vscode-database",
-	"description": "Support mysql, postgres, SSL, socked - SQL database",
-	"version": "2.2.3",
-	"publisher": "bajdzis",
+	"name": "vscode-database-rework-example",
+	"displayName": "vscode-database custom rework example",
+	"version": "0.0.2",
+	"publisher": "testinok",
 	"scripts": {
 		"lint": "eslint src --ext .ts",
 		"vscode:prepublish": "webpack --mode production",

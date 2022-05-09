@@ -78,6 +78,9 @@ export class Manager {
             newServer.restoreConnection(fields).then(() => {
                 newServer.name = fields.name;
                 this.registerNewServer(newServer);
+                if(fields.database !== null) {
+                    this.changeDatabase(fields.database);
+                }
                 this.showStatus();
             }).catch((err) => {
                 vscode.window.showErrorMessage(err);
@@ -97,6 +100,7 @@ export class Manager {
 
         Promise.all(queries).then(allResult => {
             allResult.forEach(result => {
+                this.outputMsg('');
                 this.outputMsg(result.sql);
                 this.queryOutput(result.data, result.sql);
             });

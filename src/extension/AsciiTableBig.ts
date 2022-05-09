@@ -21,9 +21,7 @@ export const asciiTableBig = (json: AnyObject[], appendLine: (line: string) => v
         for (const row in json) {
 
             appendLine('');
-            appendLine('');
             appendLine('ROW : ' + row);
-            appendLine('');
 
             for (const key in json[row]) {
 
@@ -44,7 +42,6 @@ export const asciiTableBig = (json: AnyObject[], appendLine: (line: string) => v
             }
 
             appendLine(line());
-            appendLine('');
         }
     };
 
