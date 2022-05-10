@@ -208,33 +208,51 @@ export class Manager {
             return completionItems;
         }
         
-        const aliases:any = this.getAliases();
+        const aliases:any = this.getAliases(document, position);
         const linePrefix = document.lineAt(position).text.substr(0, position.character);
 
+        // console.log(aliases);
         for( const tableName in databaseScructure ) {
-            
+
+            const beforeComplete = linePrefix.split(' ');
+            const regex = new RegExp(`^${aliases[tableName]}\.$`, "g");
+            // console.log(tableName);
+            // console.log(aliases[tableName.toString()]);
+            // console.log(beforeComplete[beforeComplete.length -1].match(regex));
+            if (!linePrefix.endsWith(tableName + '\`.') &&
+                !linePrefix.endsWith(tableName + '.') &&
+                beforeComplete[beforeComplete.length -1]
+                    .match(regex) == null) {
+                continue;
+            }
+
             for( const columnName in databaseScructure[tableName] ) {
+            
                 const element = databaseScructure[tableName][columnName];
                 const item = new vscode.CompletionItem(element.Field);
                 
                 item.kind = vscode.CompletionItemKind.Field;
-                item.detail = 'Column from ' + tableName;
+                item.detail = 'Column from `' + tableName + '`';
                 item.documentation = 'Type :' + element.Type + '\n Table :' + tableName + '\n Default :' + element.Default + '\n Key :' + element.Key + '\n Extra :' + element.Extra ;
                 item.insertText = element.Field;
-
-                if (linePrefix.endsWith(tableName + '\`.') ||
-                    linePrefix.endsWith(tableName + '.') ||
-                    linePrefix.endsWith(aliases[tableName] + '.')) {
-                    completionItems.push(item);
-                }
+                completionItems.push(item);
             }
         }
         return completionItems;
     }
 
-    getCompletionAlias(): vscode.CompletionItem[] {
+    getCompletionAlias(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
+        const linePrefix = document.lineAt(position).text.substr(0, position.character - 1).trim();
         const completionItems: vscode.CompletionItem[] = [];
-        const aliases = this.getAliases();
+
+        if (linePrefix.endsWith('as') ||
+            linePrefix.endsWith('aS') ||
+            linePrefix.endsWith('As') ||
+            linePrefix.endsWith('AS')) {
+            return completionItems;
+        }
+
+        const aliases = this.getAliases(document, position);
 
         for (const aliasName in aliases) {
             const item = new vscode.CompletionItem(aliases[aliasName]);
@@ -248,21 +266,56 @@ export class Manager {
         return completionItems;
     }
 
-    getAliases() {
+    getAliases(document: vscode.TextDocument, position: vscode.Position) {
         const aliases:any = {};
 
         let activeEditor = vscode.window.activeTextEditor;
         if (activeEditor) {
             const regex = /\`?\w+\`?\s+[asAS]{2}\s+\w+/g;
-            const text = activeEditor.document.getText().trim();
+           
+            const doc = activeEditor.document;
+            const text = doc.getText();
+           
+            const findStart = text.substring(0, doc.offsetAt(position));
+            // console.log(findStart);
+            const blockStartPosition = doc.positionAt(findStart.lastIndexOf('-- @block'));
+            // console.log(blockStartPosition);
 
+            const findEnd = text.substring(doc.offsetAt(position));
+            // console.log(findEnd);
+            const blockOffset = findEnd.indexOf('-- @block');
+            let blockStopPosition = doc.positionAt(text.length - 1);
+            if(blockOffset != -1) {
+                blockStopPosition = doc.positionAt(doc.offsetAt(position) + blockOffset);
+            }
+            // console.log(blockStopPosition);
+            
+            // const queryStart = /([selectSELECT]{6})|([insertINSERT]){6}/g;
+            // const lowerText = text.toLocaleLowerCase();
+            // const selectIndex = lowerText.lastIndexOf('select');
+            // const insertIndex = lowerText.lastIndexOf('insert');
+            // const startIndex = (selectIndex > insertIndex) ? 
+            //     selectIndex : insertIndex;
+            // const stopIndex = (position.character < text.length -1) ?
+            //     text.length -1 : position.character;
+            // if (position.isBefore(new vscode.Position()))
+            // const queryEnd = text.substring().indexOf(';');
+            
             let match;
-            while ((match = regex.exec(text)) !== null) {
+            while ((match = regex.exec(doc.getText(new vscode.Range(
+                    blockStartPosition, blockStopPosition)).trim())) !== null) {
                 const splitMatch = match[0].split(' ');
-                 aliases[splitMatch[0].replace(/\`/g, '')] = splitMatch[2];
+                const key = splitMatch[0].replace(/\`/g, '');
+                
+                for( const tableName in this.getStructure() ) {
+                    if (key === tableName && aliases[key] !== splitMatch[2]) {
+                        aliases[key] = splitMatch[2];
+                        break;
+                    }
+                }
             }
         }
-
+        // console.log(aliases);
         return aliases;
     }
 

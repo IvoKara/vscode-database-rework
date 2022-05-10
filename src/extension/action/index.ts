@@ -19,6 +19,7 @@ export interface ActionsList {
 export const actionsList: ActionsList = {
     'extension.changeDB': ChangeDB,
     'extension.changeServer': ChangeServer,
+    // 'extension.refreshServer': RefreshServer,
     'extension.connectToSQLServer': ConnectToSQLServer,
     'extension.queryBuild': QueryBuild,
     'extension.queryFileSQL': QueryFileSQL,

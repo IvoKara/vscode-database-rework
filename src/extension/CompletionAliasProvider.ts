@@ -5,8 +5,8 @@ class CompletionAliasProvider implements vscode.CompletionItemProvider{
 
     constructor() { 
     }
-    provideCompletionItems() {
-        return manager.getCompletionAlias();
+    provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+        return manager.getCompletionAlias(document, position);
     }
     // resolveCompletionItem(item: vscode.CompletionItem) {
     // // resolveCompletionItem(item: vscode.CompletionItem) {

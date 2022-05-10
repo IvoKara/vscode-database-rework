@@ -37,6 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
     addCommand(context, 'extension.changeDB');
     
     addCommand(context, 'extension.changeServer');
+
+    // addCommand(context, 'extension.refreshServer');
     
     addCommand(context, 'extension.connectToSQLServer');
 

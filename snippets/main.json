@@ -28,7 +28,14 @@
         "body": "WHERE ${condition}",
         "text": "WHERE",
         "description": ""
+    },
+    "-- @block": {
+        "prefix": [
+            "block",
+            "@block",
+            "-- @block"
+        ],
+        "body": "-- @block ",
+        "description": ""
     }
-
-
 }
