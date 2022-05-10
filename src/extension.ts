@@ -7,6 +7,7 @@ import structureProvider from './extension/StructureProvider';
 import connectionsProvider from './extension/ConnectionsProvider';
 import completionTableProvider from './extension/CompletionTableProvider';
 import completionColumnProvider from './extension/CompletionColumnProvider';
+import completionAliasProvider from './extension/CompletionAliasProvider';
 import { setExtensionPath } from './extension/webViews/webViewsRunner';
 import { markdownProvider } from './extension/providers/markdownProvider';
 
@@ -18,9 +19,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     setExtensionPath(context.extensionPath);
 
-    const provider1 = vscode.languages.registerCompletionItemProvider('sql', completionTableProvider);
-    const provider2 = vscode.languages.registerCompletionItemProvider('sql', completionColumnProvider,'.');
-    context.subscriptions.push(provider1, provider2);
+    const tablesProvider = vscode.languages.registerCompletionItemProvider('sql', completionTableProvider);
+    const columnsProvider = vscode.languages.registerCompletionItemProvider('sql', completionColumnProvider,'.');
+    const aliasesProvider = vscode.languages.registerCompletionItemProvider('sql', completionAliasProvider);
+    context.subscriptions.push(tablesProvider, columnsProvider, aliasesProvider);
     
     vscode.window.registerTreeDataProvider('Table', structureProvider);
 
