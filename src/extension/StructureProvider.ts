@@ -41,6 +41,10 @@ class StructureProvider{
     }
 }
 
+export class Table extends vscode.TreeItem {
+    
+}
+
 const structureProvider = new StructureProvider();
 
 export default structureProvider;

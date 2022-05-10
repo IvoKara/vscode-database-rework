@@ -176,7 +176,7 @@ export class Manager {
         return this.currentStructure;
     }
 
-    getCompletionItem (): vscode.CompletionItem[]{
+    getCompletionTable (): vscode.CompletionItem[] {
         const completionItems: vscode.CompletionItem[] = [];
         const databaseScructure = this.getStructure();
 
@@ -186,30 +186,49 @@ export class Manager {
 
         for( const tableName in databaseScructure ) {
             const tableItem = new vscode.CompletionItem(tableName);
-            tableItem.insertText = this.currentServer.getIdentifiedTableName(tableName);
+            tableItem.insertText = tableName;
             tableItem.kind = vscode.CompletionItemKind.Class;
             tableItem.detail = 'Table';
             tableItem.documentation = databaseScructure[tableName].length + ' columns :';
             
             for( const columnName in databaseScructure[tableName] ) {
                 const element = databaseScructure[tableName][columnName];
-                const item = new vscode.CompletionItem(tableName + '.' + element.Field);
-                
-                item.kind = vscode.CompletionItemKind.Property;
-                item.detail = 'Column from ' + tableName;
-                item.documentation = 'Type :' + element.Type + '\n Table :' + tableName + '\n Default :' + element.Default + '\n Key :' + element.Key + '\n Extra :' + element.Extra ;
-                item.insertText = element.Field;
-
-                completionItems.push(item);
-
                 tableItem.documentation += '\n ' + element.Field + ' (' + element.Type  + ')';
-
             }
-            completionItems.push(tableItem);
+                completionItems.push(tableItem);
         }
         return completionItems;
     }
     
+    getCompletionColumns (document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
+        const completionItems: vscode.CompletionItem[] = [];
+        const databaseScructure = this.getStructure();
+
+        if(!this.currentServer){
+            return completionItems;
+        }
+
+        const linePrefix = document.lineAt(position).text.substr(0, position.character);
+
+        for( const tableName in databaseScructure ) {
+            
+            for( const columnName in databaseScructure[tableName] ) {
+                const element = databaseScructure[tableName][columnName];
+                const item = new vscode.CompletionItem(element.Field);
+                
+                item.kind = vscode.CompletionItemKind.Variable;
+                item.detail = 'Column from ' + tableName;
+                item.documentation = 'Type :' + element.Type + '\n Table :' + tableName + '\n Default :' + element.Default + '\n Key :' + element.Key + '\n Extra :' + element.Extra ;
+                item.insertText = element.Field;
+
+                if (linePrefix.endsWith(tableName + '.')) {
+                    completionItems.push(item);
+                }
+            }
+        }
+        return completionItems;
+    }
+
     changeServer (server: AbstractServer){
         this.currentServer = server;
         this.currentStructure = {};

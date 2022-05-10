@@ -5,7 +5,8 @@ import config from './extension/action/helpers/Config';
 import { manager } from './extension/Manager';
 import structureProvider from './extension/StructureProvider';
 import connectionsProvider from './extension/ConnectionsProvider';
-import completionItemsProvider from './extension/CompletionItemsProvider';
+import completionTableProvider from './extension/CompletionTableProvider';
+import completionColumnProvider from './extension/CompletionColumnProvider';
 import { setExtensionPath } from './extension/webViews/webViewsRunner';
 import { markdownProvider } from './extension/providers/markdownProvider';
 
@@ -17,7 +18,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     setExtensionPath(context.extensionPath);
 
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider('sql', completionItemsProvider, ' '));
+    const provider1 = vscode.languages.registerCompletionItemProvider('sql', completionTableProvider);
+    const provider2 = vscode.languages.registerCompletionItemProvider('sql', completionColumnProvider,'.');
+    context.subscriptions.push(provider1, provider2);
     
     vscode.window.registerTreeDataProvider('Table', structureProvider);
 
